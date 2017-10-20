@@ -9,7 +9,7 @@ import net.corda.core.crypto.random63BitValue
 import net.corda.core.internal.concurrent.OpenFuture
 import net.corda.core.internal.concurrent.openFuture
 import net.corda.core.serialization.SingletonSerializeAsToken
-import net.corda.core.transactions.LedgerTransaction
+import net.corda.core.transactions.FullTransaction
 import net.corda.core.utilities.loggerFor
 import net.corda.node.services.api.MonitoringService
 import net.corda.nodeapi.VerifierApi
@@ -60,9 +60,9 @@ abstract class OutOfProcessTransactionVerifierService(
         }
     }
 
-    abstract fun sendRequest(nonce: Long, transaction: LedgerTransaction)
+    abstract fun sendRequest(nonce: Long, transaction: FullTransaction)
 
-    override fun verify(transaction: LedgerTransaction): CordaFuture<*> {
+    override fun verify(transaction: FullTransaction): CordaFuture<*> {
         log.info("Verifying ${transaction.id}")
         val future = openFuture<Unit>()
         val nonce = random63BitValue()

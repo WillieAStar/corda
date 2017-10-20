@@ -14,7 +14,6 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.toFuture
 import net.corda.core.utilities.NonEmptySet
 import rx.Observable
-import rx.subjects.PublishSubject
 import java.time.Instant
 import java.util.*
 
@@ -46,8 +45,8 @@ class Vault<out T : ContractState>(val states: Iterable<StateAndRef<T>>) {
             val produced: Set<StateAndRef<U>>,
             val flowId: UUID? = null,
             /**
-             * Specifies the type of update, currently supported types are general and notary change. Notary
-             * change transactions only modify the notary field on states, and potentially need to be handled
+             * Specifies the type of update, currently supported types are general and, contract upgrade and notary change.
+             * Notary change transactions only modify the notary field on states, and potentially need to be handled
              * differently.
              */
             val type: UpdateType = UpdateType.GENERAL
@@ -97,11 +96,6 @@ class Vault<out T : ContractState>(val states: Iterable<StateAndRef<T>>) {
         }
     }
 
-    companion object {
-        val NoUpdate = Update(emptySet(), emptySet(), type = Vault.UpdateType.GENERAL)
-        val NoNotaryUpdate = Vault.Update(emptySet(), emptySet(), type = Vault.UpdateType.NOTARY_CHANGE)
-    }
-
     @CordaSerializable
     enum class StateStatus {
         UNCONSUMED, CONSUMED, ALL
@@ -109,7 +103,7 @@ class Vault<out T : ContractState>(val states: Iterable<StateAndRef<T>>) {
 
     @CordaSerializable
     enum class UpdateType {
-        GENERAL, NOTARY_CHANGE
+        GENERAL, NOTARY_CHANGE, CONTRACT_UPGRADE
     }
 
     /**

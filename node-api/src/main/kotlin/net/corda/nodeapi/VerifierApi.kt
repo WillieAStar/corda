@@ -2,7 +2,7 @@ package net.corda.nodeapi
 
 import net.corda.core.serialization.deserialize
 import net.corda.core.serialization.serialize
-import net.corda.core.transactions.LedgerTransaction
+import net.corda.core.transactions.FullTransaction
 import org.apache.activemq.artemis.api.core.SimpleString
 import org.apache.activemq.artemis.api.core.client.ClientMessage
 import org.apache.activemq.artemis.reader.MessageUtil
@@ -16,7 +16,7 @@ object VerifierApi {
 
     data class VerificationRequest(
             val verificationId: Long,
-            val transaction: LedgerTransaction,
+            val transaction: FullTransaction,
             val responseAddress: SimpleString
     ) {
         companion object {

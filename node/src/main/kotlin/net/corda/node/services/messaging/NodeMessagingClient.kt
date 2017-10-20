@@ -15,7 +15,7 @@ import net.corda.core.node.services.TransactionVerifierService
 import net.corda.core.serialization.SerializationDefaults
 import net.corda.core.serialization.deserialize
 import net.corda.core.serialization.serialize
-import net.corda.core.transactions.LedgerTransaction
+import net.corda.core.transactions.FullTransaction
 import net.corda.core.utilities.*
 import net.corda.node.VersionInfo
 import net.corda.node.services.RPCUserService
@@ -48,7 +48,6 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Lob
-import javax.security.auth.x500.X500Principal
 
 // TODO: Stop the wallet explorer and other clients from using this class and get rid of persistentInbox
 
@@ -610,7 +609,7 @@ class NodeMessagingClient(override val config: NodeConfiguration,
 
     private fun createOutOfProcessVerifierService(): TransactionVerifierService {
         return object : OutOfProcessTransactionVerifierService(monitoringService) {
-            override fun sendRequest(nonce: Long, transaction: LedgerTransaction) {
+            override fun sendRequest(nonce: Long, transaction: FullTransaction) {
                 messagingExecutor.fetchFrom {
                     state.locked {
                         val message = session!!.createMessage(false)

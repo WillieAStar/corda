@@ -4,11 +4,11 @@ import com.google.common.util.concurrent.MoreExecutors
 import net.corda.core.internal.concurrent.fork
 import net.corda.core.node.services.TransactionVerifierService
 import net.corda.core.serialization.SingletonSerializeAsToken
-import net.corda.core.transactions.LedgerTransaction
+import net.corda.core.transactions.FullTransaction
 import java.util.concurrent.Executors
 
 class InMemoryTransactionVerifierService(numberOfWorkers: Int) : SingletonSerializeAsToken(), TransactionVerifierService {
     private val workerPool = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(numberOfWorkers))
 
-    override fun verify(transaction: LedgerTransaction) = workerPool.fork(transaction::verify)
+    override fun verify(transaction: FullTransaction) = workerPool.fork(transaction::verify)
 }

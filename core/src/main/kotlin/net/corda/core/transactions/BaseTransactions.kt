@@ -29,4 +29,7 @@ abstract class FullTransaction : BaseTransaction() {
         check(inputNotaries.size == 1) { "All inputs must point to the same notary" }
         check(inputNotaries.single() == notary) { "The specified notary must be the one specified by all inputs" }
     }
+
+    /** Transaction type-specific verification logic that involves running contract code. */
+    abstract fun verify()
 }

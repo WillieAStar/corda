@@ -4,11 +4,11 @@ import net.corda.core.contracts.*
 import net.corda.core.crypto.SecureHash
 import net.corda.core.crypto.TransactionSignature
 import net.corda.core.crypto.serializedHash
-import net.corda.core.utilities.toBase58String
 import net.corda.core.identity.Party
 import net.corda.core.node.ServiceHub
 import net.corda.core.node.StateLoader
 import net.corda.core.serialization.CordaSerializable
+import net.corda.core.utilities.toBase58String
 import java.security.PublicKey
 
 /**
@@ -27,7 +27,8 @@ data class NotaryChangeWireTransaction(
      * [NotaryChangeLedgerTransaction] and applying the notary modification to inputs.
      */
     override val outputs: List<TransactionState<ContractState>>
-        get() = emptyList()
+        get() = throw IllegalStateException("NotaryChangeWireTransaction does not contain output states, " +
+                "outputs can only be obtained from a resolved NotaryChangeLedgerTransaction")
 
     init {
         check(inputs.isNotEmpty()) { "A notary change transaction must have inputs" }
@@ -79,6 +80,9 @@ data class NotaryChangeLedgerTransaction(
     override fun getKeyDescriptions(keys: Set<PublicKey>): List<String> {
         return keys.map { it.toBase58String() }
     }
+
+    /** No contracts are run when changing notaries. */
+    override fun verify() {}
 
     /**
      * Check that encumbrances have been included in the inputs. The [NotaryChangeFlow] guarantees that an encumbrance

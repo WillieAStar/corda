@@ -380,6 +380,10 @@ abstract class FlowLogic<out T> {
     }
 }
 
+fun <T> FlowLogic<T>.verifytx(): Unit {
+    println()
+}
+
 /**
  * Version and name of the CorDapp hosting the other side of the flow.
  */

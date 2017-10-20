@@ -6,7 +6,9 @@ import net.corda.core.flows.FlowException
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.FlowSession
 import net.corda.core.serialization.CordaSerializable
+import net.corda.core.transactions.ContractUpgradeWireTransaction
 import net.corda.core.transactions.SignedTransaction
+import net.corda.core.transactions.WireTransaction
 import net.corda.core.utilities.exactAdd
 import java.util.*
 
@@ -156,13 +158,18 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
      * Returns a list of all the dependencies of the given transactions, deepest first i.e. the last downloaded comes
      * first in the returned list and thus doesn't have any unverified dependencies.
      */
+    // TODO: This could be done in parallel with other fetches for extra speed.
     @Suspendable
     private fun fetchMissingAttachments(downloads: List<SignedTransaction>) {
-        // TODO: This could be done in parallel with other fetches for extra speed.
-        val wireTransactions = downloads.filterNot { it.isNotaryChangeTransaction() }.map { it.tx }
-        val missingAttachments = wireTransactions.flatMap { wtx ->
-            wtx.attachments.filter { serviceHub.attachments.openAttachment(it) == null }
+        val attachments = downloads.flatMap {
+            val coreTransaction = it.coreTransaction
+            when (coreTransaction) {
+                is WireTransaction -> coreTransaction.attachments
+                is ContractUpgradeWireTransaction -> listOf(coreTransaction.legacyContractAttachment, coreTransaction.upgradedContractAttachment)
+                else -> emptyList()
+            }
         }
+        val missingAttachments = attachments.filter { serviceHub.attachments.openAttachment(it) == null }
         if (missingAttachments.isNotEmpty())
             subFlow(FetchAttachmentsFlow(missingAttachments.toSet(), otherSide))
     }

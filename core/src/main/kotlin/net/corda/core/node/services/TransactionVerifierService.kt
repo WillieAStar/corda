@@ -1,7 +1,7 @@
 package net.corda.core.node.services
 
 import net.corda.core.concurrent.CordaFuture
-import net.corda.core.transactions.LedgerTransaction
+import net.corda.core.transactions.FullTransaction
 
 /**
  * Provides verification service. The implementation may be a simple in-memory verify() call or perhaps an IPC/RPC.
@@ -12,5 +12,5 @@ interface TransactionVerifierService {
      * @param transaction The transaction to be verified.
      * @return A future that completes successfully if the transaction verified, or sets an exception the verifier threw.
      */
-    fun verify(transaction: LedgerTransaction): CordaFuture<*>
+    fun verify(transaction: FullTransaction): CordaFuture<*>
 }
